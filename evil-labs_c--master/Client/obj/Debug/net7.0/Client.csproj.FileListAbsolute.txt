@@ -1,0 +1,15 @@
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\bin\Debug\net7.0\Client.exe
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\bin\Debug\net7.0\Client.deps.json
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\bin\Debug\net7.0\Client.runtimeconfig.json
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\bin\Debug\net7.0\Client.dll
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\bin\Debug\net7.0\Client.pdb
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.csproj.AssemblyReference.cache
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.AssemblyInfoInputs.cache
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.AssemblyInfo.cs
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.csproj.CoreCompileInputs.cache
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.dll
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\refint\Client.dll
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.pdb
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\Client.genruntimeconfig.cache
+C:\Users\egoro\Desktop\evil-labs_c--master\Client\obj\Debug\net7.0\ref\Client.dll
