@@ -1,63 +1,35 @@
-﻿using System;
+using System;
 using System.IO.Pipes;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Server
+class Program
 {
-    class Program
+    static void Main()
     {
-        public struct Ad
+        using (var serverPipe = new NamedPipeServerStream("MyPipe", PipeDirection.InOut))
         {
-            public int X;
-            public int Y;
-            public bool Podtv;
-        }
-        static async Task Main()
-        {
-            Console.WriteLine("Ожидание клиента...\n");
+            Console.WriteLine("Сервер ожидает подключения...");
+            serverPipe.WaitForConnection();
 
-            using (var serverPipe = new NamedPipeServerStream("tonel", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            var formatter = new BinaryFormatter();
+
+            while (true)
             {
-                await serverPipe.WaitForConnectionAsync();
+                // Принимаем данные от клиента
+                byte[] buffer = new byte[1024];
+                int bytesRead = serverPipe.Read(buffer, 0, buffer.Length);
+                var memoryStream = new System.IO.MemoryStream(buffer, 0, bytesRead);
+                MyData receivedData = (MyData)formatter.Deserialize(memoryStream);
+                Console.WriteLine($"Получено от клиента: Number = {receivedData.Number}, Message = {receivedData.Message}");
 
-                Console.WriteLine("Клиент подключен.\n");
-
-                Ad receivedData = ReceiveData(serverPipe);
-                Console.WriteLine($"Получены данные от клиента: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
-
-                receivedData.X += receivedData.Y;
-                receivedData.Y -= receivedData.X;
-                receivedData.Podtv = true;
-
-                Console.WriteLine($"Отправляем данные клиенту: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
-                SendData(serverPipe, receivedData);
-
-                await WaitForPipeDrainAsync(serverPipe);
+                // Отправляем ответ клиенту
+                MyData responseData = new MyData { Number = 42, Message = "Ответ от сервера" };
+                memoryStream = new System.IO.MemoryStream();
+                formatter.Serialize(memoryStream, responseData);
+                serverPipe.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+                Console.WriteLine("Отправлено клиенту.");
             }
-
-            Console.WriteLine("Сервер завершил работу.");
-        }
-        static Ad ReceiveData(NamedPipeServerStream pipe)
-        {
-            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
-            pipe.Read(buffer, 0, buffer.Length);
-            return MemoryMarshal.Read<Ad>(buffer);
-        }
-
-        static void SendData(NamedPipeServerStream pipe, Ad data)
-        {
-            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
-            MemoryMarshal.Write(buffer, ref data);
-            pipe.Write(buffer, 0, buffer.Length);
-        }
-
-        static async Task WaitForPipeDrainAsync(NamedPipeServerStream pipe)
-        {
-            var semaphore = new SemaphoreSlim(1);
-            await semaphore.WaitAsync();
-            semaphore.Release();
         }
     }
 }
+
