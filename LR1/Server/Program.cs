@@ -1,28 +1,63 @@
 using System;
 using System.IO.Pipes;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
-class Program
+namespace Server
 {
-    static void Main()
+    class Program
     {
-        using (var serverPipe = new NamedPipeServerStream("MyPipe", PipeDirection.InOut))
+        public struct Ad
         {
-            Console.WriteLine("Сервер ожидает подключения...");
-            serverPipe.WaitForConnection();
+            public int X;
+            public int Y;
+            public bool Podtv;
+        }
+        static async Task Main()
+        {
+            Console.WriteLine("Ожидание клиента...\n");
 
-            var formatter = new BinaryFormatter();
-            
-            while (true)
+            using (var serverPipe = new NamedPipeServerStream("tonel", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
             {
-                
-                MyData receivedData = (MyData)formatter.Deserialize(serverPipe);
-                Console.WriteLine($"Получено от клиента: Number = {receivedData.Number}, Message = {receivedData.Message}");
+                await serverPipe.WaitForConnectionAsync();
 
-                MyData responseData = new MyData { Number = 42, Message = "Ответ от сервера" };
-                formatter.Serialize(serverPipe, responseData);
-                Console.WriteLine("Отправлено клиенту.");
+                Console.WriteLine("Клиент подключен.\n");
+
+                Ad receivedData = ReceiveData(serverPipe);
+                Console.WriteLine($"Получены данные от клиента: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
+
+                receivedData.X += receivedData.Y;
+                receivedData.Y -= receivedData.X;
+                receivedData.Podtv = true;
+
+                Console.WriteLine($"Отправляем данные клиенту: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
+                SendData(serverPipe, receivedData);
+
+                await WaitForPipeDrainAsync(serverPipe);
             }
+
+            Console.WriteLine("Сервер завершил работу.");
+        }
+        static Ad ReceiveData(NamedPipeServerStream pipe)
+        {
+            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
+            pipe.Read(buffer, 0, buffer.Length);
+            return MemoryMarshal.Read<Ad>(buffer);
+        }
+
+        static void SendData(NamedPipeServerStream pipe, Ad data)
+        {
+            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
+            MemoryMarshal.Write(buffer, ref data);
+            pipe.Write(buffer, 0, buffer.Length);
+        }
+
+        static async Task WaitForPipeDrainAsync(NamedPipeServerStream pipe)
+        {
+            var semaphore = new SemaphoreSlim(1);
+            await semaphore.WaitAsync();
+            semaphore.Release();
         }
     }
 }
