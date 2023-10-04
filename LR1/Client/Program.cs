@@ -15,21 +15,18 @@ class Program
 
             while (true)
             {
+                
                 MyData requestData = new MyData { Number = 10, Message = "Запрос от клиента" };
-                var memoryStream = new System.IO.MemoryStream();
-                formatter.Serialize(memoryStream, requestData);
-                clientPipe.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+                formatter.Serialize(clientPipe, requestData);
                 Console.WriteLine("Отправлено серверу.");
 
-                byte[] buffer = new byte[1024];
-                int bytesRead = clientPipe.Read(buffer, 0, buffer.Length);
-                memoryStream = new System.IO.MemoryStream(buffer, 0, bytesRead);
-                MyData response = (MyData)formatter.Deserialize(memoryStream);
+                
+                MyData response = (MyData)formatter.Deserialize(clientPipe);
                 Console.WriteLine($"Получено от сервера: Number = {response.Number}, Message = {response.Message}");
 
+                
                 System.Threading.Thread.Sleep(2000);
             }
         }
     }
 }
-
