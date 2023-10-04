@@ -1,57 +1,35 @@
-﻿using System;
+using System;
 using System.IO.Pipes;
-using System.Runtime.InteropServices;
-
-public struct CustomData
-{
-    public int Number;
-    public string Text;
-}
+using System.Runtime.Serialization.Formatters.Binary;
 
 class Program
 {
     static void Main()
     {
-        Console.WriteLine("Клиент: Подключение к серверу...");
         using (var clientPipe = new NamedPipeClientStream(".", "MyPipe", PipeDirection.InOut))
         {
+            Console.WriteLine("Подключение к серверу...");
             clientPipe.Connect();
-            Console.WriteLine("Клиент: Подключено к серверу.");
 
-            byte[] dataFromServerBytes = new byte[1024]; 
-            int bytesRead = clientPipe.Read(dataFromServerBytes, 0, dataFromServerBytes.Length);
-            byte[] trimmedData = new byte[bytesRead];
-            Array.Copy(dataFromServerBytes, trimmedData, bytesRead);
-            CustomData dataFromServer = DeserializeData(trimmedData);
-            Console.WriteLine($"Клиент: Получены данные от сервера - Number: {dataFromServer.Number}, Text: {dataFromServer.Text}");
+            var formatter = new BinaryFormatter();
 
-            CustomData dataToServer = new CustomData
+            while (true)
             {
-                Number = 123,
-                Text = "Привет, сервер!"
-            };
+                MyData requestData = new MyData { Number = 10, Message = "Запрос от клиента" };
+                var memoryStream = new System.IO.MemoryStream();
+                formatter.Serialize(memoryStream, requestData);
+                clientPipe.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+                Console.WriteLine("Отправлено серверу.");
 
-            byte[] dataToServerBytes = SerializeData(dataToServer);
-            clientPipe.Write(dataToServerBytes, 0, dataToServerBytes.Length);
-            Console.WriteLine("Клиент: Ответ отправлен серверу.");
+                byte[] buffer = new byte[1024];
+                int bytesRead = clientPipe.Read(buffer, 0, buffer.Length);
+                memoryStream = new System.IO.MemoryStream(buffer, 0, bytesRead);
+                MyData response = (MyData)formatter.Deserialize(memoryStream);
+                Console.WriteLine($"Получено от сервера: Number = {response.Number}, Message = {response.Message}");
+
+                System.Threading.Thread.Sleep(2000);
+            }
         }
     }
-
-    static byte[] SerializeData(CustomData data)
-    {
-        string serializedText = $"{data.Number},{data.Text}";
-        return System.Text.Encoding.UTF8.GetBytes(serializedText);
-    }
-
-    static CustomData DeserializeData(byte[] buffer)
-    {
-        string serializedText = System.Text.Encoding.UTF8.GetString(buffer);
-        string[] parts = serializedText.Split(',');
-        CustomData data = new CustomData
-        {
-            Number = int.Parse(parts[0]),
-            Text = parts[1]
-        };
-        return data;
-    }
 }
+
