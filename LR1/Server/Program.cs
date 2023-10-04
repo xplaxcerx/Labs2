@@ -12,19 +12,15 @@ class Program
             serverPipe.WaitForConnection();
 
             var formatter = new BinaryFormatter();
-
+            
             while (true)
             {
-                byte[] buffer = new byte[1024];
-                int bytesRead = serverPipe.Read(buffer, 0, buffer.Length);
-                var memoryStream = new System.IO.MemoryStream(buffer, 0, bytesRead);
-                MyData receivedData = (MyData)formatter.Deserialize(memoryStream);
+                
+                MyData receivedData = (MyData)formatter.Deserialize(serverPipe);
                 Console.WriteLine($"Получено от клиента: Number = {receivedData.Number}, Message = {receivedData.Message}");
 
                 MyData responseData = new MyData { Number = 42, Message = "Ответ от сервера" };
-                memoryStream = new System.IO.MemoryStream();
-                formatter.Serialize(memoryStream, responseData);
-                serverPipe.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+                formatter.Serialize(serverPipe, responseData);
                 Console.WriteLine("Отправлено клиенту.");
             }
         }
