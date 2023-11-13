@@ -69,11 +69,13 @@ namespace Server
                             {
                                 var data = Queue.Dequeue();
                                 byte[] spam = new byte[Unsafe.SizeOf<Ad>()];
-                                MemoryMarshal.Write(spam, ref data);
-                                stream.Write(spam);
-                                byte[] array = new byte[Unsafe.SizeOf<Ad>()];
-                                stream.Read(array);
-                                uds.Add(MemoryMarshal.Read<Ad>(array));
+MemoryMarshal.Write(spam, ref data);
+stream.Write(spam);
+
+byte[] array = new byte[Unsafe.SizeOf<Ad>()];
+stream.Read(array);
+uds.Add(MemoryMarshal.Read<Ad>(array));
+
                             }
                         }
                     }
