@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
@@ -29,19 +29,19 @@ namespace Server
             {
                 while (!token.IsCancellationRequested)
                 {
-                    Console.WriteLine("Введите значение -> ");
+                    Console.WriteLine("Введите значение: ");
                     var value = Console.ReadLine();
                     if (value.Length == 0)
                     {
-                        Console.WriteLine("Ты не ввел цифры, попробуй заново\n");
+                        Console.WriteLine("Вы не ввели цифры, попробуйте снова: \n");
                         continue;
                     }
 
-                    Console.WriteLine("Введите приоритет -> ");
+                    Console.WriteLine("Введите приоритет: ");
                     var priority = Console.ReadLine();
                     if (priority.Length == 0)
                     {
-                        Console.WriteLine("Ты не ввел цифры, попробуй заново\n");
+                        Console.WriteLine("Вы не ввели цифры, попробуйте снова: \n");
                         continue;
                     }
                     var data = new Ad { X = Convert.ToInt32(value), Podtv = false };
@@ -111,7 +111,7 @@ namespace Server
                 using (var stream = new NamedPipeServerStream("tonel", PipeDirection.InOut))
                 {
                     stream.WaitForConnection();
-                    Console.WriteLine("Клиент подключен!\n");
+                    Console.WriteLine("Клиент подключен\n");
                     Task task1 = ServerTask(stream, Token);
                     Task task2 = ClientTask(Token);
                     await Task.WhenAll(task1, task2);
