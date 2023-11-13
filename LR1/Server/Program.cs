@@ -65,18 +65,17 @@ namespace Server
                     {
                         if (Queue.Count >= 1)
                         {
-                            lock (Mutex)
-                            {
-                                var data = Queue.Dequeue();
-                                byte[] spam = new byte[Unsafe.SizeOf<Ad>()];
-MemoryMarshal.Write(spam, ref data);
-stream.Write(spam);
-
-byte[] array = new byte[Unsafe.SizeOf<Ad>()];
-stream.Read(array);
-uds.Add(MemoryMarshal.Read<Ad>(array));
-
-                            }
+                        Mutex.WaitOne();
+                        var data = Queue.Dequeue();
+                        mutex.ReleaseMutex();
+                        byte[] spam = new byte[Unsafe.SizeOf<Ad>()];
+                        MemoryMarshal.Write<Ad>(spam, ref data);
+                        stream.Write(spam);
+                        byte[] array = new byte[Unsafe.SizeOf<Ad>()];
+                        stream.Read(array);
+                        uds.Add(MemoryMarshal.Read<Ad>(array));
+                    }
+                            
                         }
                     }
                 }
