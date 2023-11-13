@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj": {}
+    "C:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj": {}
   },
   "projects": {
-    "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj": {
+    "C:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj",
+        "projectUniqueName": "C:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj",
         "projectName": "Server",
-        "projectPath": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj",
+        "projectPath": "C:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj",
         "packagesPath": "C:\\Users\\egoro\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\obj\\",
+        "outputPath": "C:\\Users\\egoro\\Desktop\\LR1\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\egoro\\AppData\\Roaming\\NuGet\\NuGet.Config",

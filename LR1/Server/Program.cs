@@ -1,63 +1,134 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace Server
 {
-    class Program
+    public struct Ad
     {
-        public struct Ad
-        {
-            public int X;
-            public int Y;
-            public bool Podtv;
-        }
-        static async Task Main()
-        {
-            Console.WriteLine("Ожидание клиента...\n");
+        public int X;
+        public bool Podtv;
 
-            using (var serverPipe = new NamedPipeServerStream("tonel", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+        public override string ToString() => $"Данные = {X}, Ответ = {Podtv}";
+    }
+
+    internal class Program
+    {
+        private static readonly CancellationTokenSource Up = new CancellationTokenSource();
+        private static readonly CancellationToken Token = Up.Token;
+        private static readonly PriorityQueue<Ad, int> Queue = new PriorityQueue<Ad, int>();
+        private static readonly Mutex Mutex = new Mutex();
+
+        private static Task ClientTask(CancellationToken token)
+        {
+            return Task.Run(() =>
             {
-                await serverPipe.WaitForConnectionAsync();
+                while (!token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Введите значение -> ");
+                    var value = Console.ReadLine();
+                    if (value.Length == 0)
+                    {
+                        Console.WriteLine("Ты не ввел цифры, попробуй заново\n");
+                        continue;
+                    }
 
-                Console.WriteLine("Клиент подключен.\n");
+                    Console.WriteLine("Введите приоритет -> ");
+                    var priority = Console.ReadLine();
+                    if (priority.Length == 0)
+                    {
+                        Console.WriteLine("Ты не ввел цифры, попробуй заново\n");
+                        continue;
+                    }
+                    var data = new Ad { X = Convert.ToInt32(value), Podtv = false };
 
-                Ad receivedData = ReceiveData(serverPipe);
-                Console.WriteLine($"Получены данные от клиента: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
+                    lock (Mutex)
+                    {
+                        Queue.Enqueue(data, Convert.ToInt32(priority));
+                    }
+                }
+            });
+        }
 
-                receivedData.X += receivedData.Y;
-                receivedData.Y -= receivedData.X;
-                receivedData.Podtv = true;
+        private static Task ServerTask(NamedPipeServerStream stream, CancellationToken token)
+        {
+            return Task.Run(() =>
+            {
+                List<Ad> uds = new List<Ad>();
+                try
+                {
+                    while (!token.IsCancellationRequested)
+                    {
+                        if (Queue.Count >= 1)
+                        {
+                            lock (Mutex)
+                            {
+                                var data = Queue.Dequeue();
+                                byte[] spam = new byte[Unsafe.SizeOf<Ad>()];
+                                MemoryMarshal.Write(spam, ref data);
+                                stream.Write(spam);
+                                byte[] array = new byte[Unsafe.SizeOf<Ad>()];
+                                stream.Read(array);
+                                uds.Add(MemoryMarshal.Read<Ad>(array));
+                            }
+                        }
+                    }
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"IOException in ServerTask: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An unexpected error occurred in ServerTask: {ex.Message}");
+                }
+                finally
+                {
+                    stream.Dispose(); 
+                }
 
-                Console.WriteLine($"Отправляем данные клиенту: X={receivedData.X}, Y={receivedData.Y}, Podtv={receivedData.Podtv}\n");
-                SendData(serverPipe, receivedData);
+                foreach (var item in uds)
+                {
+                    Console.WriteLine(item);
+                }
+            });
+        }
 
-                await WaitForPipeDrainAsync(serverPipe);
+        private static async Task Main(string[] args)
+        {
+            Console.CancelKeyPress += (s, e) =>
+            {
+                e.Cancel = true;
+                Up.Cancel();
+            };
+
+            try
+            {
+                using (var stream = new NamedPipeServerStream("tonel", PipeDirection.InOut))
+                {
+                    stream.WaitForConnection();
+                    Console.WriteLine("Клиент подключен!\n");
+                    Task task1 = ServerTask(stream, Token);
+                    Task task2 = ClientTask(Token);
+                    await Task.WhenAll(task1, task2);
+                }
             }
-
-            Console.WriteLine("Сервер завершил работу.");
-        }
-        static Ad ReceiveData(NamedPipeServerStream pipe)
-        {
-            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
-            pipe.Read(buffer, 0, buffer.Length);
-            return MemoryMarshal.Read<Ad>(buffer);
-        }
-
-        static void SendData(NamedPipeServerStream pipe, Ad data)
-        {
-            byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
-            MemoryMarshal.Write(buffer, ref data);
-            pipe.Write(buffer, 0, buffer.Length);
-        }
-
-        static async Task WaitForPipeDrainAsync(NamedPipeServerStream pipe)
-        {
-            var semaphore = new SemaphoreSlim(1);
-            await semaphore.WaitAsync();
-            semaphore.Release();
+            catch (IOException ex)
+            {
+                Console.WriteLine($"IOException in Main: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred in Main: {ex.Message}");
+            }
+            finally
+            {
+                Up.Dispose();  
+            }
         }
     }
 }

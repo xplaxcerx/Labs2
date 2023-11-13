@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Client\\Client.csproj": {}
+    "C:\\Users\\egoro\\Desktop\\LR1\\Client\\Client.csproj": {}
   },
   "projects": {
-    "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Client\\Client.csproj": {
+    "C:\\Users\\egoro\\Desktop\\LR1\\Client\\Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Client\\Client.csproj",
+        "projectUniqueName": "C:\\Users\\egoro\\Desktop\\LR1\\Client\\Client.csproj",
         "projectName": "Client",
-        "projectPath": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Client\\Client.csproj",
+        "projectPath": "C:\\Users\\egoro\\Desktop\\LR1\\Client\\Client.csproj",
         "packagesPath": "C:\\Users\\egoro\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Client\\obj\\",
+        "outputPath": "C:\\Users\\egoro\\Desktop\\LR1\\Client\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\egoro\\AppData\\Roaming\\NuGet\\NuGet.Config",

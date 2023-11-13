@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pR1bktWYCt+dYkTbMN6PlQEivSmyyaL9TwROA+9C8Ds/aOJwE5WcjnYdqWtxxjveZZiFLwH58DRI/hh834z2Ig==",
+  "dgSpecHash": "SXGwazRvoHke+3RusEe0jTO6IRjQZNxnnE9BGTabnxxQQAxFXVeUmnZu4ZA/OPo/JZ5C9E1numWIIhl/D5zuWA==",
   "success": true,
-  "projectFilePath": "c:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj",
+  "projectFilePath": "C:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

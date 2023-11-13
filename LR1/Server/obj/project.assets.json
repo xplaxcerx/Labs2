@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj",
+      "projectUniqueName": "c:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj",
       "projectName": "Server",
-      "projectPath": "C:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\Server.csproj",
+      "projectPath": "c:\\Users\\egoro\\Desktop\\LR1\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\egoro\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\egoro\\Desktop\\evil-labs_c--master\\Server\\obj\\",
+      "outputPath": "c:\\Users\\egoro\\Desktop\\LR1\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\egoro\\AppData\\Roaming\\NuGet\\NuGet.Config",
