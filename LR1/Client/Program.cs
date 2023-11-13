@@ -14,11 +14,11 @@ class Program
     {
         try
         {
-            Console.WriteLine("Соединяю с базой\n");
+            Console.WriteLine("Соеденение с базой...\n");
             var stream = new NamedPipeClientStream(".", "tonel", PipeDirection.InOut);
             stream.Connect();
-            Console.WriteLine("Соединил, шеф!\n");
-            Console.WriteLine("Ждем-с данных\n");
+            Console.WriteLine("Соеденено \n");
+            Console.WriteLine("Ожидание данных... \n");
             while (true)
             {
                 byte[] array = new byte[Unsafe.SizeOf<Ad>()];
