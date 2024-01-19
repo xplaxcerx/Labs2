@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-public struct Ad
+public struct ClientData
 {
     public double A;
     public double B;
 }
 
-public struct Ud
+public struct ServerData
 {
     public double Result;
     public override string ToString() => $"Res = {Result}";
@@ -24,7 +24,7 @@ internal class Program
     private static int id = 0;
     static CancellationTokenSource up = new CancellationTokenSource();
     static CancellationToken token = up.Token;
-    static PriorityQueue<Ad, string> queue = new PriorityQueue<Ad, string>();
+    static PriorityQueue<ClientData, string> queue = new PriorityQueue<ClientData, string>();
     static Mutex mutex = new Mutex();
 
     private static Task clientTask(CancellationToken token)
@@ -33,7 +33,7 @@ internal class Program
         {
             while (!token.IsCancellationRequested)
             {
-                var data = new Ad();
+                var data = new ClientData();
                 Console.WriteLine($"Введите значение A -> ");
                 var nach = Console.ReadLine();
                 if (!double.TryParse(nach, out double valueA))
@@ -66,12 +66,12 @@ internal class Program
     {
         return Task.Run(() =>
         {
-            List<Ud> uds = new List<Ud>();
+            List<ServerData> uds = new List<ServerData>();
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    Ad data;
+                    ClientData data;
                     lock (mutex)
                     {
                         if (queue.Count >= 1)
@@ -101,7 +101,7 @@ internal class Program
         });
     }
 
-    private static async Task runclient(CancellationToken token, List<Ud> uds, Ad data)
+    private static async Task runclient(CancellationToken token, List<ServerData> uds, ClientData data)
     {
         id++;
         string name = $"tonel_{id}";
@@ -114,14 +114,14 @@ internal class Program
             var stream = new NamedPipeServerStream($"{name}", PipeDirection.InOut);
             await stream.WaitForConnectionAsync();
 
-            byte[] spam = new byte[Unsafe.SizeOf<Ad>()];
+            byte[] spam = new byte[Unsafe.SizeOf<ClientData>()];
             MemoryMarshal.Write(spam, ref data);
             await stream.WriteAsync(spam, token);
 
-            byte[] array = new byte[Unsafe.SizeOf<Ud>()];
+            byte[] array = new byte[Unsafe.SizeOf<ServerData>()];
             await stream.ReadAsync(array, token);
 
-            uds.Add(MemoryMarshal.Read<Ud>(array));
+            uds.Add(MemoryMarshal.Read<ServerData>(array));
 
             await Task.Run(() => myProcess.WaitForExit());
         }
