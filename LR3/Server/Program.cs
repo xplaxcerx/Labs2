@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
@@ -18,65 +17,6 @@ public struct Ud
 {
     public double Result;
     public override string ToString() => $"Res = {Result}";
-}
-
-public class PriorityQueue<TItem, TPrior> where TPrior : class
-{
-    private readonly SortedDictionary<TPrior, Queue<TItem>> _dictionary = new SortedDictionary<TPrior, Queue<TItem>>();
-    private readonly object _lockObject = new object();
-
-    public int Count
-    {
-        get
-        {
-            lock (_lockObject)
-            {
-                return _dictionary.Values.Sum(queue => queue.Count);
-            }
-        }
-    }
-
-    public void Enqueue(TItem item, TPrior priority)
-    {
-        lock (_lockObject)
-        {
-            if (!_dictionary.TryGetValue(priority, out var queue))
-            {
-                queue = new Queue<TItem>();
-                _dictionary.Add(priority, queue);
-            }
-            queue.Enqueue(item);
-        }
-    }
-
-    public TItem Dequeue()
-    {
-        lock (_lockObject)
-        {
-            if (_dictionary.Count == 0)
-            {
-                // Queue is empty, handle accordingly (throw an exception or return a default value)
-                throw new InvalidOperationException("Queue is empty.");
-            }
-
-            var queue = _dictionary.Values.First();
-
-            if (queue.Count == 0)
-            {
-                // If the current queue is empty, remove it from the dictionary
-                _dictionary.Remove(_dictionary.First().Key);
-
-                // If the dictionary is now empty, handle accordingly (throw an exception or return a default value)
-                if (_dictionary.Count == 0)
-                {
-                    throw new InvalidOperationException("Queue is empty.");
-                }
-            }
-
-            var item = queue.Dequeue();
-            return item;
-        }
-    }
 }
 
 internal class Program
@@ -167,7 +107,7 @@ internal class Program
         string name = $"tonel_{id}";
         using (Process myProcess = new Process())
         {
-            myProcess.StartInfo.FileName = "C:\\Users\\egoro\\Desktop\\lab-3n\\Client\\bin\\Debug\\net7.0\\Client.exe";
+            myProcess.StartInfo.FileName = "C:\\Users\\egoro\\Desktop\\LR3\\Client\\bin\\Debug\\net7.0\\Client.exe";
             myProcess.StartInfo.Arguments = name;
             myProcess.Start();
 

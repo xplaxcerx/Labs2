@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,11 +38,11 @@ namespace Client
 
                 for (i = 0; i < 1000; i++)
                 {
-                    double xi = answer.A + i * h + h / 2; // Adjusted midpoint calculation
-                    result += -2 * xi * xi; // Modified to calculate -2x^2
+                    double xi = answer.A + i * h + h / 2; 
+                    result += 3 * Math.Pow(xi, 3); 
                 }
 
-                result *= h; // Adjusted multiplication to match the midpoint rule
+                result *= h; 
 
                 byte[] spam = new byte[Unsafe.SizeOf<Ud>()];
 
@@ -52,7 +52,7 @@ namespace Client
             }
             catch
             {
-                // Handle exceptions if needed
+                
             }
         }
     }
