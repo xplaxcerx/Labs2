@@ -1,4 +1,5 @@
-﻿﻿using System;
+﻿using System;
+usingusing System;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,14 +9,14 @@ namespace Client
 {
     class Program
     {
-        public struct Ad
+        public struct ClientData
         {
             public double A;
             public double B;
             public double sum;
         }
 
-        public struct Ud
+        public struct ServerData
         {
             public double Result;
         }
@@ -28,9 +29,9 @@ namespace Client
                 var name = args[0];
                 var stream = new NamedPipeClientStream(".", name, PipeDirection.InOut);
                 await stream.ConnectAsync();
-                byte[] array = new byte[Unsafe.SizeOf<Ad>()];
+                byte[] array = new byte[Unsafe.SizeOf<ClientData>()];
                 await stream.ReadAsync(array);
-                var answer = MemoryMarshal.Read<Ad>(array);
+                var answer = MemoryMarshal.Read<ClientData>(array);
 
                 var result = 0.0;
                 double h = (answer.B - answer.A) / 1000;
@@ -44,9 +45,9 @@ namespace Client
 
                 result *= h; 
 
-                byte[] spam = new byte[Unsafe.SizeOf<Ud>()];
+                byte[] spam = new byte[Unsafe.SizeOf<ServerData>()];
 
-                var pipa = new Ud { Result = result };
+                var pipa = new ServerData { Result = result };
                 MemoryMarshal.Write(spam, ref pipa);
                 await stream.WriteAsync(spam);
             }
