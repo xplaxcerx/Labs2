@@ -55,7 +55,7 @@ public class PriorityQueue<TItem, TPrior> where TPrior : class
         {
             if (_dictionary.Count == 0)
             {
-                // Queue is empty, handle accordingly (throw an exception or return a default value)
+                
                 throw new InvalidOperationException("Queue is empty.");
             }
 
@@ -63,10 +63,9 @@ public class PriorityQueue<TItem, TPrior> where TPrior : class
 
             if (queue.Count == 0)
             {
-                // If the current queue is empty, remove it from the dictionary
+                
                 _dictionary.Remove(_dictionary.First().Key);
 
-                // If the dictionary is now empty, handle accordingly (throw an exception or return a default value)
                 if (_dictionary.Count == 0)
                 {
                     throw new InvalidOperationException("Queue is empty.");
@@ -95,22 +94,22 @@ internal class Program
             while (!token.IsCancellationRequested)
             {
                 var data = new ClientData();
-                Console.WriteLine($"Введите значение A -> ");
+                Console.WriteLine($"Введите значение A: ");
                 var nach = Console.ReadLine();
                 if (!double.TryParse(nach, out double valueA))
                 {
-                    Console.WriteLine("Ошибка: введено некорректное значение для A. Попробуйте заново.\n");
+                    Console.WriteLine("Некорректное значение для A. Попробуйте снова.\n");
                     continue;
                 }
                 else
                 {
                     data.A = valueA;
                 }
-                Console.WriteLine($"Введите значение B -> ");
+                Console.WriteLine($"Введите значение B: ");
                 var conch = Console.ReadLine();
                 if (!double.TryParse(conch, out double valueB))
                 {
-                    Console.WriteLine("Ошибка: введено некорректное значение для B. Попробуйте заново.\n");
+                    Console.WriteLine("Некорректное значение для B. Попробуйте снова.\n");
                     continue;
                 }
                 else
@@ -140,7 +139,7 @@ internal class Program
                         }
                         else
                         {
-                            // Queue is empty, wait for a short time before checking again
+                            
                             Thread.Sleep(100);
                             continue;
                         }
@@ -193,7 +192,7 @@ internal class Program
             up.Cancel();
         };
 
-        Console.WriteLine("Клиент подключен!\n");
+        Console.WriteLine("Клиент подключен\n");
 
         Task task_1 = serverTask(token);
         Task task_2 = clientTask(token);
